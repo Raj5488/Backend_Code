@@ -1,5 +1,7 @@
 const  mongoose = require("mongoose");
 const {Schema} = mongoose;
+const JWT = require('jsonwebtoken');
+
 const userSchema = new Schema({
     name: {
         type: String,
@@ -24,8 +26,17 @@ const userSchema = new Schema({
     forPasswordExpiryDate:{
         type: String
     }
-},{timestamps: true
-
+},
+{timestamps: true
 });
+userSchema.methods = {
+    jwtToken(){
+        return JWT.sign(
+            {id: this.id, email: this.email,},
+            process.env.SECRET,
+            {expiresIn: "24"}
+        )
+    }
+}
 const userModel = mongoose.model('user', userSchema);
 module.exports = userModel;
