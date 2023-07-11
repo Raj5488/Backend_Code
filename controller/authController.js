@@ -1,5 +1,7 @@
 const userModel = require("../model/userSchema.js");
 const emailValidator = require("email-validator");
+
+
 const signup = async (req, res, next)=>{
     const {name, email, password, confirmPassword} = req.body;
     // console.log(name, email, password, confirmPassword);
@@ -43,14 +45,14 @@ if(password !== confirmPassword){
                 message: e.message
             })
         }
-
         return res.status(400).json({
             success: false,
             message: e.message
         })
     }
-
 }
+
+
 const signin = async (req, res) =>{
     const{email, password} = req.body;
 
@@ -94,7 +96,46 @@ const signin = async (req, res) =>{
 
     }
 }
+
+const getUser = async (req, res, next)=>{
+    const userId = req.user.id;
+    try{
+        const user = await userModel.findById(userId);
+        return res.status(200).json({
+            success: true,
+            data: user
+        })
+    }catch(e){
+        res.status(400).json({
+            success: false,
+            message: e.message
+        })
+    }
+}
+
+const logout = (req, res)=>{
+    try{
+        const cookieOption = {
+            expires: new Date(),
+            httpOnly: true
+        };
+        res.cookie("token", null, cookieOption);
+        res.status(200).json({
+            success: true,
+            message: "Logged Out"
+        })
+    }catch(e){
+        res.status(400).json({
+            success: false,
+            message: e.message
+        })
+
+    }
+}
+
 module.exports = {
     signup,
-    signin
+    signin,
+    getUser,
+    logout
 }
