@@ -10,12 +10,13 @@ const jwtAuth = (req, res, next)=>{
     try{
         const payload = JWT.verify(token, process.env.SECRET);
         req.user ={id: payload.id, email: playload.email}
+        next();
     }catch(e){
         return res.status(400).json({
             success: false,
             message: e.message
         })
     }
-    next();
+    
 }
 module.exports = jwtAuth;
